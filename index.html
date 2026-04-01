@@ -79,7 +79,7 @@ function correctCard() {
 	//presents the next card!
 	flip()
 	
-	//document.getElementById("debug").innerHTML = vocab.length + " " + rand
+	document.getElementById("debug").innerHTML = "Remaining: " + vocab.length;
 }
 
 function wrongCard() {
@@ -107,6 +107,7 @@ function flipCard() {
 <button class="flipBtn" onclick="flipCard()" id="fCard">Flip!</button>
 <button class="wrongBtn" onclick="wrongCard()" id="wCard">Wrong!</button>
 
+<p id="debug"></p>
 
 </body>
 </html>
