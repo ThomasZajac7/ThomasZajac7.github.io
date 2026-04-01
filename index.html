@@ -62,8 +62,9 @@ let rand = Math.floor(Math.random() * vocab.length);
 let greekSide = 0
 
 
-//Initializes the card
+//Initializes the card and debug
 document.getElementById("card").innerHTML = vocab[rand][0]
+document.getElementById("debug").innerHTML = "Remaining: " + vocab.length;
 
 function flip() {
 	
