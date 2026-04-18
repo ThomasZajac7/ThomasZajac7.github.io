@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
 <title>RBC: Greek Vocab</title>
 <style>
 .correctBtn {
@@ -45,6 +46,21 @@
 .flipBtn:hover {
 	background-color: #AB00D1;
 }
+
+.submitRangeBtn {
+	background-color: #F5DF00;
+	color: white;
+	font-size: 15px;
+	padding: 12px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.submitRangeBtn:hover {
+	background-color: #D1C000;
+}
+
 }
 </style>
 </head>
@@ -54,35 +70,78 @@
 <p id="card">This is the card!.</p>
 <!-- <p id="debug">count</p> -->
 
+<button class="correctBtn" onclick="correctCard()" id="cCard">Correct!</button>
+<button class="flipBtn" onclick="flipCard()" id="fCard">Flip!</button>
+<button class="wrongBtn" onclick="wrongCard()" id="wCard">Wrong!</button>
+
+
+<p id="debug">Remaining: </p>
+
+<label for=startRange>Range:</label>
+<input type="number" id="startRange" value="3"></input>
+<input type="number" id="endRange" value="15"></input>
+
+<button class="submitRangeBtn" onclick="submitRange()">Set Range</button>
+
+<p id="range">Vocabulary from chapters 3 through 15</p>
+
+
+
 <script> 
 
 //Array holder for all of the vocab
-const vocab = [['ἄγω, ἄξω ', 'I lead, I will lead (ag ent)', '3'], ['ἀκούω, ἀκούσω ', 'I hear, I will hear (acou stics)', '3'], ['βαπτίζω, βαπτίσω ', 'I baptize, I will baptize (√βαπτιδ, baptism)', '3'], ['βλέπω, βλέψω ', 'I see, I will see', '3'], ['γράφω, γράψω ', 'I write, I will write (graph ics)', '3'], ['διδάσκω, διδάξω ', 'I teach, I will teach (√διδακ, dida ctic)', '3'], ['δοξάζω, δοξάσω ', 'I glorify, I will glorify (√δοξαδ, dox ology)', '3'], ['ἑτοιμάζω, ἑτοιμάσω ', 'I prepare, I will prepare (√ἑτοιμαδ)', '3'], ['ἔχω, ἕξω ', 'I have, I will have (√ἑχ, hec tic [from ἑκτικός, "habitual"])', '3'], ['θεραπεύω, θεραπεύσω ', 'I heal, I will heal (therapeu tic)', '3'], ['κηρύσσω, κηρύξω ', 'I preach, I will preach (√κηρυκ, kery gma)', '3'], ['λύω, λύσω ', 'I loose, I will loose (analy sis)', '3'], ['πείθω, πείσω ', 'I trust in, I will trust in (√πιθ, [Lat. Fid ], fidelity )', '3'], ['πέμπω, πέμψω ', 'I send, I will send (pomp )', '3'], ['πιστεύω, πιστεύσω ', 'I believe, I will believe', '3'], ['σώζω, σώσω ', 'I save, I will save (√σωδ, sozin [an animal protein])', '3'], ['εἰμί ', 'I am (√ἐσ, is)', '3'], ['μή ', 'not (with non-indicative moods)', '3'], ['οὐ ', 'not (with indicative mood)', '3'], ['ἄγγελος, ὁ ', 'angel, messenger (ange lic)', '4'], ['ἀγρός, ὁ ', 'field (agr arian)', '4'], ['ἀδελφός, ὁ ', 'brother, fellow believer (Philadelph ia)', '4'], ['ἁμαρτωλός, ὁ ', 'sinner (hamartiology [the study of sin])', '4'], ['ἄνθρωπος, ὁ ', 'man, person (anthrop ology)', '4'], ['ἀπόστολος, ὁ ', 'apostle, messenger (apostolic)', '4'], ['διάκονος, ὁ ', 'minister (deacon )', '4'], ['δοῦλος, ὁ ', 'servant, slave', '4'], ['θάνατος, ὁ ', 'death (thanat ology [the study of death and dying])', '4'], ['θεός, ὁ ', 'God, god (the ology)', '4'], ['Ἰησοῦς, ὁ ', 'Jesus', '4'], ['κόσμος, ὁ ', 'world (cosm ic)', '4'], ['κύριος, ὁ ', 'Lord, master (kyrie eleison, "Lord, have mercy")', '4'], ['λίθος, ὁ ', 'stone (lith ography)', '4'], ['λόγος, ὁ ', 'word, message (log ical)', '4'], ['νόμος, ὁ ', 'law (antinom ian)', '4'], ['οἶκος, ὁ ', 'house, household (ec onomy)', '4'], ['ὄχλος, ὁ ', 'crowd (ochl ocracy [mob rule])', '4'], ['υἱός, ὁ ', 'son', '4'], ['Χριστός, ὁ ', 'Christ', '4'], ['δῶρον, τό ', 'gift (√δο, do nate)', '4'], ['ἔργον, τό ', 'work (erg [a unit of work], cf. energy )', '4'], ['εὐαγγέλιον, τό ', 'gospel (evangelical)', '4'], ['ἱερόν, τό ', 'temple (hier archy)', '4'], ['τέκνον, τό ', 'child', '4'], ['ἔρημος, ἡ ', 'wilderness, desert (herm it)', '4'], ['ὁδός, ἡ ', 'road, way (od ometer)', '4'], ['γινώσκω ', 'I know (√γνο, Gno stic)', '4'], ['λαμβάνω ', 'I take, I receive (√λαβ, lab yrinth)', '4'], ['λέγω ', 'I say, I speak (Christopher ["bearer of Christ"])', '4'], ['φέρω ', 'I bring, I bear', '4'], ['ἀλλά ', 'but', '4'], ['δέ ', 'now, but (postpositive)', '4'], ['καί ', 'and, also, even', '4'], ['καὶ . . . καί ', 'both . . . and', '4'], ['', 'CHAPTER 5', '4'], ['ἀλήθεια, ἡ ', 'truth', '4'], ['ἁμαρτία, ἡ ', 'sin (hamarti ology [the study of sin])', '4'], ['βασιλεία, ἡ ', 'kingdom, reign (basili ca)', '4'], ['διακονία, ἡ ', 'ministry, service (diacon ate)', '4'], ['ἐκκλησία, ἡ ', 'church, assembly (ecclesi astical [related to the church])', '4'], ['ἐξουσία, ἡ ', 'authority, right', '4'], ['ἐπιθυμία, ἡ ', 'desire, lust', '4'], ['ἡμέρα, ἡ ', 'day (ephemer al)', '4'], ['καρδία, ἡ ', 'heart (cardi ac)', '4'], ['μαρτυρία, ἡ ', 'testimony (marty r)', '4'], ['οἰκία, ἡ ', 'house (cf. οἶκος)', '4'], ['παρρησία, ἡ ', 'boldness, confidence', '4'], ['σοφία, ἡ ', 'wisdom (sophisticated)', '4'], ['σωτηρία, ἡ ', 'salvation (soteri ology)', '4'], ['χαρά, ἡ ', 'joy (Charissa)', '4'], ['ὥρα, ἡ ', 'hour (hor oscope)', '4'], ['γλῶσσα, ἡ ', 'tongue, language (gloss alalia)', '4'], ['δόξα, ἡ ', 'glory (dox ology)', '4'], ['θάλασσα, ἡ ', 'sea (thallasic [pertaining to the sea])', '4'], ['ἀγάπη, ἡ ', 'love (the Agape [the love feast])', '4'], ['ἀρχή, ἡ ', 'beginning (arch aic)', '4'], ['γῆ, ἡ ', 'earth, land (ge ology)', '4'], ['γραφή, ἡ ', 'Scripture, writing (graph ics)', '4'], ['διαθήκη, ἡ ', 'covenant', '4'], ['διδαχή, ἡ ', 'teaching (the Didache [an early Christian writing])', '4'], ['δικαιοσύνη, ἡ ', 'righteousness', '4'], ['εἰρήνη, ἡ ', 'peace (Irene )', '4'], ['ἐντολή, ἡ ', 'commandment', '4'], ['ἐπιστολή, ἡ ', 'letter (epistle )', '4'], ['ζωή, ἡ ', 'life (zo ology)', '4'], ['κεφαλή, ἡ ', 'head (encephalitis [inflamation of the brain])', '4'], ['ὀργή, ἡ ', 'anger, wrath', '4'], ['παραβολή, ἡ ', 'parable (parabo lic)', '4'], ['περιτομή, ἡ ', 'circumcision', '4'], ['προσευχή, ἡ ', 'prayer', '4'], ['συναγωγή, ἡ ', 'synagogue', '4'], ['ὑπομονή, ἡ ', 'endurance, steadfastness', '4'], ['φωνή, ἡ ', 'voice, sound (phon ology)', '4'], ['ψυχή, ἡ ', 'soul, life (psych ology)', '4'], ['μαθητής, ὁ ', 'disciple (√μαθ, math ematics)', '4'], ['προφήτης, ὁ ', 'prophet (prophetic)', '4'], ['στρατιώτης, ὁ ', 'soldier (strat egic)', '4'], ['τελώνης, ὁ ', 'tax collector', '4'], ['ὑποκριτής, ὁ ', 'hypocrite (hypocritical)', '4'], ['Μεσσίας, ὁ ', 'Messiah (messi anic)', '4'], ['νεανίας, ὁ ', 'young man (from νεός ["new"], neo -orthodox)', '4'], ['ὁ, ἡ, τό ', 'the', '4'], ['ἀπό ', 'from; away from, of (with gen.)', '4'], ['εἰς ', 'into; to, for, in (with acc.) (es oteric)', '4'], ['ἐκ ', 'out of; from, by (with gen.) (ec centric)', '4'], ['ἐν ', 'in; within, by, with, among (with dat.) (en ergy)', '4'], ['ἀγαθός, -ή, -όν ', 'good (Agath a)', '6'], ['ἀγαπητός, -ή, -όν ', 'beloved (the Agape [the love feast])', '6'], ['ἄλλος, -η, -ο ', 'other (neuter nom./acc. is irregular)', '6'], ['δυνατός, -ή, -όν ', 'powerful, possible (dyna mic)', '6'], ['ἕκαστος, -η, -ον ', 'each, every', '6'], ['ἔσχατος, -η, -ον ', 'last (eschat ology [the study of last things])', '6'], ['καινός, -ή, -όν ', 'new', '6'], ['κακός, -ή, -όν ', 'bad (cac ophony [a bad sound])', '6'], ['καλός, -ή, -όν ', 'good, beautiful (calligraphy [beautiful writing])', '6'], ['μόνος, -η, -ον ', 'only (mon otheism)', '6'], ['πιστός, -ή, -όν ', 'faithful (√πιθ [see πείθω, §26])', '6'], ['πρῶτος, -η, -ον ', 'first (prot otype)', '6'], ['σοφός, -ή, -όν ', 'wise (soph isticated)', '6'], ['τρίτος, -η, -ον ', 'third', '6'], ['ἅγιος, -α, -ον ', 'holy, saint (hagi ography [a writing about a saint])', '6'], ['ἄξιος, -α, -ον ', 'worthy (axi om [a worthy statement])', '6'], ['δεύτερος, -α, -ον ', 'second (Deuter onomy [the second statement of the law])', '6'], ['δίκαιος, -α, -ον ', 'righteous, just (√δικ ["to point out"], dic tate)', '6'], ['ἕτερος, -α, -ον ', 'other, different (heter osexual)', '6'], ['ἰσχυρός, -ά, -όν ', 'strong', '6'], ['μακάριος, -α, -ον ', 'blessed (macarism [a word of blessing])', '6'], ['μικρός, -ά, -όν ', 'small, little (micr oscope)', '6'], ['νεκρός, -ά, -όν ', 'dead (necr omancy [conversation with the dead])', '6'], ['νεός, -ά, -όν ', 'new (ne onatal)', '6'], ['πονηρός, -ά, -όν ', 'evil', '6'], ['ἀδύνατος, -ον ', 'impossible (dyn amic)', '6'], ['αἰώνιος, -ον ', 'eternal (aeon )', '6'], ['ἀκάθαρτος, -ον ', 'unclean (catharsis)', '6'], ['ἄπιστος, -ον ', 'unbelieving, faithless (cf. πιστεύω)', '6'], ['ἁμαρτάνω ', 'I sin (√ ἁμαρτ, hamartiology [the study of sin])', '7'], ['βάλλω ', 'I throw (√ βαλ, ballistic)', '7'], ['ἐσθίω ', 'I eat', '7'], ['εὑρίσκω ', 'I find (√ εὑρ, heuristic)', '7'], ['λείπω ', 'I leave (√ λιπ, lip oid [“fatty”], from λίπος [“fat”])', '7'], ['μανθάνω ', 'I learn (√ μαθ, math ematics)', '7'], ['πάσχω ', 'I suffer (√ παθ, path etic)', '7'], ['φεύγω ', 'I flee (√ φυγ, fug itive)', '7'], ['ἤκουσα ', 'I heard', '7'], ['ἡμάρτησα ', 'I sinned (cf. ἥμαρτον below)', '7'], ['ἐβάπτισα ', 'I baptized', '7'], ['ἔβλεψα ', 'I saw', '7'], ['ἔγραψα ', 'I wrote', '7'], ['ἐδίδαξα ', 'I taught', '7'], ['ἐδόξασα ', 'I glorified', '7'], ['ἡτοίμασα ', 'I prepared', '7'], ['ἐθεράπευσα ', 'I healed', '7'], ['ἐκήρυξα ', 'I preached', '7'], ['ἔλυσα ', 'I loosed', '7'], ['ἔπεισα ', 'I trusted in', '7'], ['ἔπεμψα ', 'I sent', '7'], ['ἐπίστευσα ', 'I believed', '7'], ['ἔσωσα ', 'I saved', '7'], ['ἤνεγκα ', 'I bore, I brought (cf. ἤνεγκον below)', '7'], ['ἤγαγον ', 'I led', '7'], ['ἥμαρτον ', 'I sinned (cf. ἡμάρτησα above)', '7'], ['ἔβαλον ', 'I threw', '7'], ['ἔγνων ', 'I knew', '7'], ['ἔφαγον ', 'I ate (√ φαγ, esophag ous)', '7'], ['εὗρον ', 'I found', '7'], ['ἔσχον ', 'I had (imperfect εἶχον)', '7'], ['ἔλαβον ', 'I took, I received', '7'], ['εἶπον ', 'I said, I spoke', '7'], ['ἔλιπον ', 'I left behind, lacked', '7'], ['ἔμαθον ', 'I learned', '7'], ['εἶδον ', 'I saw (from ὁράω; see §127)', '7'], ['ἔπαθον ', 'I suffered', '7'], ['ἔφυγον ', 'I fled', '7'], ['ἤνεγκον ', 'I bore, I brought (cf. ἤνεγκα above)', '7'], ['διά ', 'through; by (with gen.) (dia meter) because of; on account of (with acc.) (dia critical)', '8'], ['κατά ', 'against; down (with gen.) (cata pult) according to (with acc.) (cata log)', '8'], ['μετά ', 'with (with gen.) (meta bolic) after (with acc.) (meta morphosis)', '8'], ['περί ', 'about; concerning, for (with gen.) around (with acc.) (perimeter)', '8'], ['ὑπέρ ', 'for (with gen.) above; over (with acc.) (hypertension)', '8'], ['ὑπό ', 'by (with gen.) under (with acc.) (hypo thermia)', '8'], ['ἐπί ', 'upon; on, at, about (with gen., dat., and acc.) (epi dermis)', '8'], ['παρά ', 'from (with gen.) with (with dat.) beside; by (with acc.) (para llel)', '8'], ['ἀνά ', 'up (with acc.) (ana lysis)', '8'], ['ἀντί ', 'instead of; in place of, for (with gen.) (Anti christ)', '8'], ['πρό ', 'before (with gen.) (pro logue)', '8'], ['πρός ', 'to; toward, with (with acc.) (prosthesis)', '8'], ['σὺν ', 'with (with dat.) (syn thesis)', '8'], ['ἀναγινώσκω ', 'I read', '8'], ['ἀνοίγω ', 'I open (√ οιγ; 1 aor. ἀνέῳξα)', '8'], ['ἀποθνήσκω ', 'I die (√ θαν; 2 aor. ἀπέθανον)', '8'], ['ἐκβάλλω ', 'I throw out, I cast out', '8'], ['αὐτός, -ή, -ό ', 'he, same, self (auto mobile)', '9'], ['ἐγώ ', 'I (ego centric)', '9'], ['σὺ ', 'you', '9']];
+const vocab = [['ἄγω, ἄξω ', 'I lead, I will lead (ag ent)', '3'], ['ἀκούω, ἀκούσω ', 'I hear, I will hear (acou stics)', '3'], ['βαπτίζω, βαπτίσω ', 'I baptize, I will baptize (√βαπτιδ, baptism)', '3'], ['βλέπω, βλέψω ', 'I see, I will see', '3'], ['γράφω, γράψω ', 'I write, I will write (graph ics)', '3'], ['διδάσκω, διδάξω ', 'I teach, I will teach (√διδακ, dida ctic)', '3'], ['δοξάζω, δοξάσω ', 'I glorify, I will glorify (√δοξαδ, dox ology)', '3'], ['ἑτοιμάζω, ἑτοιμάσω ', 'I prepare, I will prepare (√ἑτοιμαδ)', '3'], ['ἔχω, ἕξω ', 'I have, I will have (√ἑχ, hec tic [from ἑκτικός, "habitual"])', '3'], ['θεραπεύω, θεραπεύσω ', 'I heal, I will heal (therapeu tic)', '3'], ['κηρύσσω, κηρύξω ', 'I preach, I will preach (√κηρυκ, kery gma)', '3'], ['λύω, λύσω ', 'I loose, I will loose (analy sis)', '3'], ['πείθω, πείσω ', 'I trust in, I will trust in (√πιθ, [Lat. Fid ], fidelity )', '3'], ['πέμπω, πέμψω ', 'I send, I will send (pomp )', '3'], ['πιστεύω, πιστεύσω ', 'I believe, I will believe', '3'], ['σώζω, σώσω ', 'I save, I will save (√σωδ, sozin [an animal protein])', '3'], ['εἰμί ', 'I am (√ἐσ, is)', '3'], ['μή ', 'not (with non-indicative moods)', '3'], ['οὐ ', 'not (with indicative mood)', '3'], ['ἄγγελος, ὁ ', 'angel, messenger (ange lic)', '4'], ['ἀγρός, ὁ ', 'field (agr arian)', '4'], ['ἀδελφός, ὁ ', 'brother, fellow believer (Philadelph ia)', '4'], ['ἁμαρτωλός, ὁ ', 'sinner (hamartiology [the study of sin])', '4'], ['ἄνθρωπος, ὁ ', 'man, person (anthrop ology)', '4'], ['ἀπόστολος, ὁ ', 'apostle, messenger (apostolic)', '4'], ['διάκονος, ὁ ', 'minister (deacon )', '4'], ['δοῦλος, ὁ ', 'servant, slave', '4'], ['θάνατος, ὁ ', 'death (thanat ology [the study of death and dying])', '4'], ['θεός, ὁ ', 'God, god (the ology)', '4'], ['Ἰησοῦς, ὁ ', 'Jesus', '4'], ['κόσμος, ὁ ', 'world (cosm ic)', '4'], ['κύριος, ὁ ', 'Lord, master (kyrie eleison, "Lord, have mercy")', '4'], ['λίθος, ὁ ', 'stone (lith ography)', '4'], ['λόγος, ὁ ', 'word, message (log ical)', '4'], ['νόμος, ὁ ', 'law (antinom ian)', '4'], ['οἶκος, ὁ ', 'house, household (ec onomy)', '4'], ['ὄχλος, ὁ ', 'crowd (ochl ocracy [mob rule])', '4'], ['υἱός, ὁ ', 'son', '4'], ['Χριστός, ὁ ', 'Christ', '4'], ['δῶρον, τό ', 'gift (√δο, do nate)', '4'], ['ἔργον, τό ', 'work (erg [a unit of work], cf. energy )', '4'], ['εὐαγγέλιον, τό ', 'gospel (evangelical)', '4'], ['ἱερόν, τό ', 'temple (hier archy)', '4'], ['τέκνον, τό ', 'child', '4'], ['ἔρημος, ἡ ', 'wilderness, desert (herm it)', '4'], ['ὁδός, ἡ ', 'road, way (od ometer)', '4'], ['γινώσκω ', 'I know (√γνο, Gno stic)', '4'], ['λαμβάνω ', 'I take, I receive (√λαβ, lab yrinth)', '4'], ['λέγω ', 'I say, I speak (Christopher ["bearer of Christ"])', '4'], ['φέρω ', 'I bring, I bear', '4'], ['ἀλλά ', 'but', '4'], ['δέ ', 'now, but (postpositive)', '4'], ['καί ', 'and, also, even', '4'], ['καὶ . . . καί ', 'both . . . and', '4'], ['', 'CHAPTER 5', '4'], ['ἀλήθεια, ἡ ', 'truth', '4'], ['ἁμαρτία, ἡ ', 'sin (hamarti ology [the study of sin])', '4'], ['βασιλεία, ἡ ', 'kingdom, reign (basili ca)', '4'], ['διακονία, ἡ ', 'ministry, service (diacon ate)', '4'], ['ἐκκλησία, ἡ ', 'church, assembly (ecclesi astical [related to the church])', '4'], ['ἐξουσία, ἡ ', 'authority, right', '4'], ['ἐπιθυμία, ἡ ', 'desire, lust', '4'], ['ἡμέρα, ἡ ', 'day (ephemer al)', '4'], ['καρδία, ἡ ', 'heart (cardi ac)', '4'], ['μαρτυρία, ἡ ', 'testimony (marty r)', '4'], ['οἰκία, ἡ ', 'house (cf. οἶκος)', '4'], ['παρρησία, ἡ ', 'boldness, confidence', '4'], ['σοφία, ἡ ', 'wisdom (sophisticated)', '4'], ['σωτηρία, ἡ ', 'salvation (soteri ology)', '4'], ['χαρά, ἡ ', 'joy (Charissa)', '4'], ['ὥρα, ἡ ', 'hour (hor oscope)', '4'], ['γλῶσσα, ἡ ', 'tongue, language (gloss alalia)', '4'], ['δόξα, ἡ ', 'glory (dox ology)', '4'], ['θάλασσα, ἡ ', 'sea (thallasic [pertaining to the sea])', '4'], ['ἀγάπη, ἡ ', 'love (the Agape [the love feast])', '4'], ['ἀρχή, ἡ ', 'beginning (arch aic)', '4'], ['γῆ, ἡ ', 'earth, land (ge ology)', '4'], ['γραφή, ἡ ', 'Scripture, writing (graph ics)', '4'], ['διαθήκη, ἡ ', 'covenant', '4'], ['διδαχή, ἡ ', 'teaching (the Didache [an early Christian writing])', '4'], ['δικαιοσύνη, ἡ ', 'righteousness', '4'], ['εἰρήνη, ἡ ', 'peace (Irene )', '4'], ['ἐντολή, ἡ ', 'commandment', '4'], ['ἐπιστολή, ἡ ', 'letter (epistle )', '4'], ['ζωή, ἡ ', 'life (zo ology)', '4'], ['κεφαλή, ἡ ', 'head (encephalitis [inflamation of the brain])', '4'], ['ὀργή, ἡ ', 'anger, wrath', '4'], ['παραβολή, ἡ ', 'parable (parabo lic)', '4'], ['περιτομή, ἡ ', 'circumcision', '4'], ['προσευχή, ἡ ', 'prayer', '4'], ['συναγωγή, ἡ ', 'synagogue', '4'], ['ὑπομονή, ἡ ', 'endurance, steadfastness', '4'], ['φωνή, ἡ ', 'voice, sound (phon ology)', '4'], ['ψυχή, ἡ ', 'soul, life (psych ology)', '4'], ['μαθητής, ὁ ', 'disciple (√μαθ, math ematics)', '4'], ['προφήτης, ὁ ', 'prophet (prophetic)', '4'], ['στρατιώτης, ὁ ', 'soldier (strat egic)', '4'], ['τελώνης, ὁ ', 'tax collector', '4'], ['ὑποκριτής, ὁ ', 'hypocrite (hypocritical)', '4'], ['Μεσσίας, ὁ ', 'Messiah (messi anic)', '4'], ['νεανίας, ὁ ', 'young man (from νεός ["new"], neo -orthodox)', '4'], ['ὁ, ἡ, τό ', 'the', '4'], ['ἀπό ', 'from; away from, of (with gen.)', '4'], ['εἰς ', 'into; to, for, in (with acc.) (es oteric)', '4'], ['ἐκ ', 'out of; from, by (with gen.) (ec centric)', '4'], ['ἐν ', 'in; within, by, with, among (with dat.) (en ergy)', '4'], ['ἀγαθός, -ή, -όν ', 'good (Agath a)', '6'], ['ἀγαπητός, -ή, -όν ', 'beloved (the Agape [the love feast])', '6'], ['ἄλλος, -η, -ο ', 'other (neuter nom./acc. is irregular)', '6'], ['δυνατός, -ή, -όν ', 'powerful, possible (dyna mic)', '6'], ['ἕκαστος, -η, -ον ', 'each, every', '6'], ['ἔσχατος, -η, -ον ', 'last (eschat ology [the study of last things])', '6'], ['καινός, -ή, -όν ', 'new', '6'], ['κακός, -ή, -όν ', 'bad (cac ophony [a bad sound])', '6'], ['καλός, -ή, -όν ', 'good, beautiful (calligraphy [beautiful writing])', '6'], ['μόνος, -η, -ον ', 'only (mon otheism)', '6'], ['πιστός, -ή, -όν ', 'faithful (√πιθ [see πείθω, §26])', '6'], ['πρῶτος, -η, -ον ', 'first (prot otype)', '6'], ['σοφός, -ή, -όν ', 'wise (soph isticated)', '6'], ['τρίτος, -η, -ον ', 'third', '6'], ['ἅγιος, -α, -ον ', 'holy, saint (hagi ography [a writing about a saint])', '6'], ['ἄξιος, -α, -ον ', 'worthy (axi om [a worthy statement])', '6'], ['δεύτερος, -α, -ον ', 'second (Deuter onomy [the second statement of the law])', '6'], ['δίκαιος, -α, -ον ', 'righteous, just (√δικ ["to point out"], dic tate)', '6'], ['ἕτερος, -α, -ον ', 'other, different (heter osexual)', '6'], ['ἰσχυρός, -ά, -όν ', 'strong', '6'], ['μακάριος, -α, -ον ', 'blessed (macarism [a word of blessing])', '6'], ['μικρός, -ά, -όν ', 'small, little (micr oscope)', '6'], ['νεκρός, -ά, -όν ', 'dead (necr omancy [conversation with the dead])', '6'], ['νεός, -ά, -όν ', 'new (ne onatal)', '6'], ['πονηρός, -ά, -όν ', 'evil', '6'], ['ἀδύνατος, -ον ', 'impossible (dyn amic)', '6'], ['αἰώνιος, -ον ', 'eternal (aeon )', '6'], ['ἀκάθαρτος, -ον ', 'unclean (catharsis)', '6'], ['ἄπιστος, -ον ', 'unbelieving, faithless (cf. πιστεύω)', '6'], ['ἁμαρτάνω ', 'I sin (√ ἁμαρτ, hamartiology [the study of sin])', '7'], ['βάλλω ', 'I throw (√ βαλ, ballistic)', '7'], ['ἐσθίω ', 'I eat', '7'], ['εὑρίσκω ', 'I find (√ εὑρ, heuristic)', '7'], ['λείπω ', 'I leave (√ λιπ, lip oid [“fatty”], from λίπος [“fat”])', '7'], ['μανθάνω ', 'I learn (√ μαθ, math ematics)', '7'], ['πάσχω ', 'I suffer (√ παθ, path etic)', '7'], ['φεύγω ', 'I flee (√ φυγ, fug itive)', '7'], ['ἤκουσα ', 'I heard', '7'], ['ἡμάρτησα ', 'I sinned (cf. ἥμαρτον below)', '7'], ['ἐβάπτισα ', 'I baptized', '7'], ['ἔβλεψα ', 'I saw', '7'], ['ἔγραψα ', 'I wrote', '7'], ['ἐδίδαξα ', 'I taught', '7'], ['ἐδόξασα ', 'I glorified', '7'], ['ἡτοίμασα ', 'I prepared', '7'], ['ἐθεράπευσα ', 'I healed', '7'], ['ἐκήρυξα ', 'I preached', '7'], ['ἔλυσα ', 'I loosed', '7'], ['ἔπεισα ', 'I trusted in', '7'], ['ἔπεμψα ', 'I sent', '7'], ['ἐπίστευσα ', 'I believed', '7'], ['ἔσωσα ', 'I saved', '7'], ['ἤνεγκα ', 'I bore, I brought (cf. ἤνεγκον below)', '7'], ['ἤγαγον ', 'I led', '7'], ['ἥμαρτον ', 'I sinned (cf. ἡμάρτησα above)', '7'], ['ἔβαλον ', 'I threw', '7'], ['ἔγνων ', 'I knew', '7'], ['ἔφαγον ', 'I ate (√ φαγ, esophag ous)', '7'], ['εὗρον ', 'I found', '7'], ['ἔσχον ', 'I had (imperfect εἶχον)', '7'], ['ἔλαβον ', 'I took, I received', '7'], ['εἶπον ', 'I said, I spoke', '7'], ['ἔλιπον ', 'I left behind, lacked', '7'], ['ἔμαθον ', 'I learned', '7'], ['εἶδον ', 'I saw (from ὁράω; see §127)', '7'], ['ἔπαθον ', 'I suffered', '7'], ['ἔφυγον ', 'I fled', '7'], ['ἤνεγκον ', 'I bore, I brought (cf. ἤνεγκα above)', '7'], ['διά ', 'through; by (with gen.) (dia meter) because of; on account of (with acc.) (dia critical)', '8'], ['κατά ', 'against; down (with gen.) (cata pult) according to (with acc.) (cata log)', '8'], ['μετά ', 'with (with gen.) (meta bolic) after (with acc.) (meta morphosis)', '8'], ['περί ', 'about; concerning, for (with gen.) around (with acc.) (perimeter)', '8'], ['ὑπέρ ', 'for (with gen.) above; over (with acc.) (hypertension)', '8'], ['ὑπό ', 'by (with gen.) under (with acc.) (hypo thermia)', '8'], ['ἐπί ', 'upon; on, at, about (with gen., dat., and acc.) (epi dermis)', '8'], ['παρά ', 'from (with gen.) with (with dat.) beside; by (with acc.) (para llel)', '8'], ['ἀνά ', 'up (with acc.) (ana lysis)', '8'], ['ἀντί ', 'instead of; in place of, for (with gen.) (Anti christ)', '8'], ['πρό ', 'before (with gen.) (pro logue)', '8'], ['πρός ', 'to; toward, with (with acc.) (prosthesis)', '8'], ['σὺν ', 'with (with dat.) (syn thesis)', '8'], ['ἀναγινώσκω ', 'I read', '8'], ['ἀνοίγω ', 'I open (√ οιγ; 1 aor. ἀνέῳξα)', '8'], ['ἀποθνήσκω ', 'I die (√ θαν; 2 aor. ἀπέθανον)', '8'], ['ἐκβάλλω ', 'I throw out, I cast out', '8'], ['αὐτός, -ή, -ό ', 'he, same, self (auto mobile)', '9'], ['ἐγώ ', 'I (ego centric)', '9'], ['σὺ ', 'you', '9'], ['οἶδα ', 'I know', '10'], ['ἡμάρτηκα ', 'I have sinned', '10'], ['βέβληκα ', 'I have thrown', '10'], ['ἔγνωκα ', 'I have known', '10'], ['ἡτοίμακα ', 'I have prepared εὕρηκα I have found', '10'], ['ἔσχηκα ', 'I have had', '10'], ['τεθεράπευκα ', 'I have healed', '10'], ['εἴρηκα ', 'I have said, I have spoken', '10'], ['λέλυκα ', 'I have loosed', '10'], ['μεμάθηκα ', 'I have learned ἑώρακα I have seen (from ὁράω; see §127)', '10'], ['πεπίστευκα ', 'I have believed', '10'], ['σέσωκα ', 'I have saved', '10'], ['ἀκήκοα ', 'I have heard', '10'], ['γέγραφα ', 'I have written', '10'], ['πέπονθα ', 'I have suffered', '10'], ['πέποιθα ', 'I have trusted in', '10'], ['πέπομφα ', 'I have sent', '10'], ['πέφευγα ', 'I have fled', '10'], ['ὅτι ', 'that, because', '10'], ['ἐκεῖνος, -η, -ο ', 'that', '11'], ['οὗτος, αὗτη, τοῦτο ', 'this', '11'], ['ἀμνός, ὁ ', 'lamb', '11'], ['ἄρτος, ὁ ', 'bread', '11'], ['διάβολος, ὁ ', 'slanderer, devil (diabolic)', '11'], ['ἐχθρός, ὁ ', 'enemy', '11'], ['ἥλιος, ὁ ', 'sun (Heli opolis [city of the sun])', '11'], ['θρόνος, ὁ ', 'throne', '11'], ['καιρός, ὁ ', 'time, occasion', '11'], ['καρπός, ὁ ', 'fruit', '11'], ['λαός, ὁ ', 'people (la ity)', '11'], ['ναός, ὁ ', 'temple, sanctuary', '11'], ['οὐρανός, ὁ ', 'heaven (Uranus)', '11'], ['ὀφθαλμός, ὁ ', 'eye (ophthalm ology)', '11'], ['Πέτρος, ὁ ', 'Peter', '11'], ['σταυρός, ὁ ', 'cross', '11'], ['τόπος, ὁ ', 'place (topo graphy)', '11'], ['τυφλός, ὁ ', 'blind man', '11'], ['φίλος, ὁ ', 'friend (phil anthropic)', '11'], ['φόβος, ὁ ', 'fear (phob ic)', '11'], ['χρόνος, ὁ ', 'time (chron ology)', '11'], ['βιβλίον, τό ', 'book (bibli ography)', '11'], ['δαιμόνιον, τό ', 'demon (daimoni c)', '11'], ['ἱμάτιον, τό ', 'cloak, garment', '11'], ['μυστήριον, τό ', 'secret (mystery )', '11'], ['παιδίον, τό ', 'child (pedi atrics)', '11'], ['πλοῖον, τό ', 'boat', '11'], ['σάββατον, τό ', 'Sabbath', '11'], ['σημεῖον, τό ', 'sign (sem antics)', '11'], ['ἄρχω ', 'I rule  (takes the gen.)', '12'], ['ὑπάρχω ', 'I am, I exist', '12'], ['ἀποκρίνομαι ', 'I answer  (takes the dat.)', '12'], ['ἄρχομαι ', 'I begin (cf. ἀρχή)', '12'], ['ἀσπάζομαι ', 'I greet', '12'], ['βούλομαι ', 'I wish', '12'], ['γίνομαι ', 'I become, I am  (takes a complement)', '12'], ['δέχομαι ', 'I receive', '12'], ['ἐκπορεύομαι ', 'I come out, I go out', '12'], ['ἐργάζομαι ', 'I work  (cf. ἔργον)', '12'], ['ἔρχομαι ', 'I come, I go  (used with numerous preps.; 2 aor. ἦλθον)', '12'], ['εὐαγγελίζομαι ', 'I preach the gospel, I bring good news  (cf. εὐαγγέλιον)', '12'], ['λογίζομαι ', 'I consider', '12'], ['πορεύομαι ', 'I come, I go', '12'], ['προσεύχομαι ', 'I pray  (cf. προσευχή)', '12'], ['ψεύδομαι ', 'I lie  (pseud onym)', '12'], ['βέβλημαι ', 'I have been thrown', '13'], ['βεβάπτισμαι ', 'I have been baptized', '13'], ['ἔγνωσμαι ', 'I have been known', '13'], ['γέγραμμαι ', 'I have been written', '13'], ['λέλυμαι ', 'I have been loosed', '13'], ['σέσωσμαι ', 'I have been saved', '13'], ['ἄχρι ', 'until, up to  (with gen.)', '13'], ['ἔτι ', 'still, yet', '13'], ['ἔως ', 'until, up to  (with gen.)', '13'], ['καθώς ', 'just as, as', '13'], ['καλῶς ', 'rightly, well  (cf. καλός)', '13'], ['νῦν ', 'now', '13'], ['ὅπου ', 'where', '13'], ['ὅτε ', 'when', '13'], ['οὐκέτι ', 'no longer  (οὐκ + ἔτι)', '13'], ['οὐχί ', 'not (emphatic form of οὐ)', '13'], ['σήμερον ', 'today  (cf. ἡμέρα)', '13'], ['τότε ', 'then', '13'], ['γάρ ', 'for  (postpositive)', '13'], ['διό ', 'therefore', '13'], ['ἤ ', 'or', '13'], ['μὲν … δέ ', 'on the one hand … on the other hand  (postpositive)', '13'], ['οὐδέ ', 'and not, nor, not even (οὐ + δέ)', '13'], ['οὐδὲ … οὐδέ ', 'neither … nor', '13'], ['οὖν ', 'therefore, then (postpositive)', '13'], ['ἀμήν ', 'truly  (Amen)', '14'], ['ἀξίως ', 'worthily  (cf. ἄξιος)', '14'], ['ἐγγύς ', 'near e', '14'], ['ἐκεῖ ', 'there, in that place', '14'], ['εὐθύς ', 'immediately, at once  (also appears as εὐθέως)', '14'], ['ἔξω ', 'outside  (cf. ἐκ)', '14'], ['οὕτως ', 'thus, in this manner  (cf. οὗτος)', '14'], ['πάντοτε ', 'always', '14'], ['πότε ', 'when?', '14'], ['ὧδε ', 'here, in this place', '14'], ['ἤχθην ', 'I was led', '15'], ['ἠκούσθην ', 'I was heard', '15'], ['ἐβλήθην ', 'I was thrown', '15'], ['ἐβαπτίσθην ', 'I was baptized', '15'], ['ἐγενήθην ', 'I became  (deponent)', '15'], ['ἐγνώσθην ', 'I was known', '15'], ['ἐδιδάχθην ', 'I was taught', '15'], ['ἐδοξάσθην ', 'I was glorified', '15'], ['ἡτοιμάσθην ', 'I was prepared', '15'], ['ἐκηρύχθην ', 'I was preached', '15'], ['ἐλήμφθην ', 'I was taken, I was received', '15'], ['ἐλείφθην ', 'I was left', '15'], ['ἐπείσθην ', 'I was trusted in', '15'], ['ἐπέμφθην ', 'I was sent', '15'], ['ἐπορεύθην ', 'I went (deponent)', '15'], ['ἐσώθην ', 'I was saved', '15'], ['ὤφθην ', 'I was seen (from ὁράω)', '15'], ['ἀπεστάλην ', 'I was sent (from ἀποστέλλω)', '15'], ['ἐγράφην ', 'I was written', '15']];
 
+//Initializes Gloabal Variables
 let rand = Math.floor(Math.random() * vocab.length);
 let greekSide = 0
 
+//vars for selecting the start and end of range
+let rangeStart = 3
+let rangeEnd = 15
+
+//Array for holding the active material
+const practiceSet = []
+
+//
+initializePracticeSet()
 
 //Initializes the card and debug
-document.getElementById("card").innerHTML = vocab[rand][0]
-document.getElementById("debug").innerHTML = "Remaining: " + vocab.length;
+document.getElementById("card").innerHTML = practiceSet[rand][0]
+document.getElementById("debug").innerHTML = "Remaining: " + practiceSet.length;
+
+function initializePracticeSet() {
+	//Initializes practiceSet array to hold all the material
+	
+	//resets it
+	practiceSet.splice(0, practiceSet.length)
+
+	//Adds all the selected material in range
+	for (let i = 0; i < vocab.length; i++) {
+		if (Number(vocab[i][2]) >= rangeStart && Number(vocab[i][2]) <= rangeEnd) {
+			practiceSet.push(vocab[i])
+		}
+	}
+}
+
+
 
 function flip() {
 	
-	rand = Math.floor(Math.random() * vocab.length);
-	document.getElementById("card").innerHTML = vocab[rand][0]
+	rand = Math.floor(Math.random() * practiceSet.length);
+	document.getElementById("card").innerHTML = practiceSet[rand][0]
 	greekSide = 0
 	
 }
 
 function correctCard() {
 	
-	vocab.splice(rand, 1);
+	practiceSet.splice(rand, 1);
 	
 	//presents the next card!
 	flip()
 	
-	document.getElementById("debug").innerHTML = "Remaining: " + vocab.length;
+	document.getElementById("debug").innerHTML = "Remaining: " + practiceSet.length;
 }
 
 function wrongCard() {
@@ -95,22 +154,28 @@ function flipCard() {
 
 	//Flips to the definition!
 	if (greekSide == 0) {
-		document.getElementById("card").innerHTML = vocab[rand][1];
+		document.getElementById("card").innerHTML = practiceSet[rand][1];
 		greekSide = 1
 	}
 	else {
-		document.getElementById("card").innerHTML = vocab[rand][0];
+		document.getElementById("card").innerHTML = practiceSet[rand][0];
 		greekSide = 0
 	}
 }
 
+function submitRange() {
+
+	//Submits the range!
+	rangeStart = document.getElementById("startRange").valueAsNumber;
+	rangeEnd = document.getElementById("endRange").valueAsNumber;
+	document.getElementById("range").innerHTML = "Vocabulary from chapters " + rangeStart + " through " + rangeEnd;
+	initializePracticeSet();
+	
+	//sets the remaining to acurately reflect the new set
+	document.getElementById("debug").innerHTML = "Remaining: " + practiceSet.length;
+}
+
 </script>
-
-<button class="correctBtn" onclick="correctCard()" id="cCard">Correct!</button>
-<button class="flipBtn" onclick="flipCard()" id="fCard">Flip!</button>
-<button class="wrongBtn" onclick="wrongCard()" id="wCard">Wrong!</button>
-
-<p id="debug">Remaining: </p>
 
 </body>
 </html>
