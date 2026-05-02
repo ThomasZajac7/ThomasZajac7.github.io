@@ -200,7 +200,22 @@ function submitRange() {
 	//Submits the range!
 	rangeStart = document.getElementById("startRange").valueAsNumber;
 	rangeEnd = document.getElementById("endRange").valueAsNumber;
+	
+	//Error Checking: Makes sure the input values stay within the proper range and corrects them
+	if (rangeStart > 15) { rangeStart = 15; rangeEnd = 15; }
+	else if (rangeStart < 3) { rangeStart = 3; }
+
+	if (rangeEnd > 15) { rangeEnd = 15; }
+	else if (rangeEnd < rangeStart) { rangeEnd = rangeStart; } //Sets the ranges to equal if the end of the range is lower than the start
+	
+	//Sets the display values of the ranges to reflect the corrected range.
+	document.getElementById("startRange").value = rangeStart;
+	document.getElementById("endRange").value = rangeEnd;
+	
+	//Sets the description on the bottom to show what chapters are being pulled from
 	document.getElementById("range").innerHTML = "Vocabulary from chapters " + rangeStart + " through " + rangeEnd;
+	
+	//Sets up the new set of verses to reflect the proper chapter numbers
 	initializePracticeSet();
 	
 	//sets the remaining to acurately reflect the new set
@@ -210,6 +225,7 @@ function submitRange() {
 	flip();
 }
 
+//This function swaps the Greek/English to be face up when the next card is selected
 function swapGE() {
 	if (upSide == 0) { upSide = 1;}
 	else { upSide = 0; }
@@ -220,5 +236,3 @@ function swapGE() {
 
 </body>
 </html>
-
-<!-- I can use the splice method to remove the exact element and not leave any holes -->
